@@ -12,6 +12,9 @@ function function weekButtonClicked(firstDay) returns firstDay as undefined <br>
 currently add new client modal pops up on the wrong spot <br>
 <br>
 (TBD) <br>
+Both modals to trigger task creation in calendar <br>
+Creating an array from user inputs <br>
+Saving user input to LocalStorage (https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Client-side_web_APIs/Client-side_storage) <br>
 Blocks to show how much full they are according to "max calls/power hour" specified in Settings (traffic light method) <br>
 Weekdays should only show working days <br>
 Holidays should show up with different font-style <br>
