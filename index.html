@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu+Condensed" rel="stylesheet">
+
+    <style>
+        html {
+            min-height: 100%;
+            background: linear-gradient(#8eefd9, #9aa2e5) fixed;
+            font-family: 'Ubuntu Condensed', sans-serif;
+        }
+
+        #calendarContainer {
+            margin: 2% 10% 2%;
+        }
+
+        .calendarView {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-content: space-between;
+            justify-content: space-between;
+        }
+
+        .toolBar {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-content: space-between;
+            align-items:center;
+            border: 1px solid #4D5D73;
+            padding: 5px;
+            margin: 5px;
+            background-color: rgba(154, 162, 229, 0.2);
+        }
+
+        #monthYear{
+            border: 1px solid #4D5D73;
+            text-align: center;
+            font-size: 20px;
+            background-color: rgb(154, 162, 229, 0.2);
+
+        }
+
+        .toolBar div {
+            flex: 1;
+        }
+
+        .toolBarLeft {
+            text-align: left;
+        }
+
+        .toolBarRight {
+            text-align: right;
+        }
+
+        .day {
+            border: 1px solid #4D5D73;
+            text-align: center;
+            color: #162C40;
+            padding: 5px;
+            margin: 5px;
+            background-color: rgba(0, 0, 0, 0.1);
+            width: 16%;
+        }
+
+        /* .monthShrink {
+        transform: scaleY(.3);
+
+        } */
+
+        button:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        .round {
+            border-radius: 50%;
+            background-color: rgb(212, 209, 209);
+        }
+
+        .hours {
+            padding: 10px;
+            border: 1px solid rgb(124, 124, 124);
+            background-color: #C2E5F2;
+
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        /* CHECK CODEPEN FORM FOR CSS ASPECTS */
+        .modalContent {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+            text-align: center;
+        }
+
+        .close {
+            color: #aaaaaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="calendarContainer">
+    <div class="toolBar">
+        <div class="toolBarLeft">
+                <button id="dayButton" onclick="dayButtonClicked()">Day View</button>
+                <button id="weekButton" onclick="weekButtonClicked()">Week View</button>
+                <button id="monthButton" onclick="monthButtonClicked()">Month View</button>
+        </div>
+        <div class="toolBarRight">
+                <button id="settings" onclick="settingsButtonClicked()">Settings</button>
+        </div>
+
+    </div>
+    <div class="toolBar">
+        <div class="toolBarLeft">
+            <button class="round" id="previous" onclick="previousButtonClicked()">&laquo; </button>
+            <button class="round" id="next" onclick="nextButtonClicked()">&raquo; </button>
+        </div>
+
+        <div id="monthYear"></div>
+
+        <div class="toolBarRight">
+            <button id="berlinTime" onclick="berlinButtonClicked()">Berlin Time</button>
+            <button id="nyTime" onclick="nyButtonClicked()">New York Time</button>
+        </div>
+    </div>
+    <div id="calendar">
+    </div>
+</div>
+    <div id="addNewClient" class="modal">
+        <div class="modalContent">
+            <span class="close" onclick="addFupClosed()">&times;</span>
+            <form method="POST">
+                <p>Add a new client to call in your core calling time</p>
+                <div> Client´s email address: <input type="email" placeholder="mr.director@verybigcompany.com" required>
+                </div>
+                <div> Follow-up frequency (day): <input type="number" placeholder="3" min="1" max="5" required></div>
+                <div> Amount of follow-up calls: <input type="number" placeholder="5" min="0" max="100" required></div>
+                <div>Any Administrative task to add: <input type="text" placeholder="create a report to send"> after
+                    <input type="number" placeholder="0" min="0" max="100"> follow-up calls.
+                </div>
+                <div><input type="submit" value="Submit"></div>
+            </form>
+        </div>
+    </div>
+
+    <div id="settingsModal" class="modal">
+        <div class="modalContent">
+            <span class="close" onclick="settingClosed()">&times;</span>
+            <form method="POST">
+                <p>Please specify your core calling times</p>
+                <div> Morning Power Hours: from: <input id="fromAM" type="time" required> to: <input id="toAM" type="time" required></div>
+                <div> Afternoon Power Hours: from: <input id="fromPM" type="time" required> to: <input id="toPM" type="time" required></div>
+                <div> Administrative tasks: from: <input id="fromAdmin" type="time" required> to: <input id="toAdmin" type="time"></div>
+                <div> How many calls do you want to achieve in one power hour? <input id="maxCalls" type="number" placeholder="30" min="1" max="500" required></div>
+                <div><input type="submit" value="Submit" onclick="timeframes()"></div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://momentjs.com/downloads/moment-with-locales.min.js"></script>
+    <script src="https://momentjs.com/downloads/moment-timezone-with-data.js"></script>
+    <script src="https://unpkg.com/moment-holiday/build/moment-holiday-us.min.js"></script>
+    <script src="https://unpkg.com/moment-holiday/locale/germany.js"></script>
+    <script src="main.js"></script>
+</body>
+
+</html>
