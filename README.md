@@ -1,21 +1,21 @@
 # Outbound-Calendar
-Javscript calendar using moments.js to support outbound sales reps with their follow-ups during their core calling time
-3 different views: Day, Week, Month
-2 timezones with added holidays: New York and Berlin
-3 blocks/day defined by Settings (modal)
-Clickable blocks to add clients (modal) 
-
-(BUGS)
-Berlin holidays return wrong JSON
-New York timezone does not change
-function function weekButtonClicked(firstDay) returns firstDay as undefined
-currently add new client modal pops up on the wrong spot 
-
-(TBD)
-Blocks to show how much full they are according to "max calls/power hour" specified in Settings (traffic light method)
-Weekdays should only show working days
-Holidays should show up with different font-style
-Previous and Next Button to work on the different views
-CSS on Modals
-CSS on dayView
-CSS in general
+Javscript calendar using moments.js to support outbound sales reps with their follow-ups during their core calling time <br>
+3 different views: Day, Week, Month <br>
+2 timezones with added holidays: New York and Berlin <br>
+3 blocks/day defined by Settings (modal) <br>
+Clickable blocks to add clients (modal) <br>
+<br>
+(BUGS) <br>
+Berlin holidays return wrong JSON <br>
+New York timezone does not change <br>
+function function weekButtonClicked(firstDay) returns firstDay as undefined <br>
+currently add new client modal pops up on the wrong spot <br>
+<br>
+(TBD) <br>
+Blocks to show how much full they are according to "max calls/power hour" specified in Settings (traffic light method) <br>
+Weekdays should only show working days <br>
+Holidays should show up with different font-style <br>
+Previous and Next Button to work on the different views <br>
+CSS on Modals <br>
+CSS on dayView <br>
+CSS in general <br>
