@@ -1,7 +1,12 @@
 let calendarElement = document.getElementById("calendar");
 moment.locale("en-gb");
 let today = moment();
-let currentWeek = today.clone().subtract(today.day(), "days");
+
+let currentWeekStart=today.clone().startOf("week");
+let currentWeekEnd=today.clone().endOf("week");
+let currentMonthStart=today.clone().startOf("month");
+let currentMonthEnd=today.clone().endOf("month");
+
 let timezone=moment.tz.guess(true);
 console.log(timezone);
 let currentTime=today.hour();
@@ -20,8 +25,6 @@ let modalCloseElement=document.getElementsByClassName("close")[0];
 // WHAT IS WRONG HERE?
 console.log(berlinHols);
 
-weekButtonClicked(currentWeek);
-
 function berlinButtonClicked(){
     moment.tz.setDefault();
 }
@@ -32,7 +35,7 @@ function nyButtonClicked(){
     console.log(currentTime);
 }
 
-//this pops up on the wrong place, why?
+//have to make div clickable for onclick function so that it does not simply popup on its own maybe?
 function addFup () {
     modalElement.style.display = "block";
 }
@@ -72,26 +75,25 @@ function dayButtonClicked() {
     dayViewElement.classList.add("day");
 
 
-    for (let i=0; i<3; i++){
-        let hourElement=document.createElement("div");
-        hourElement.classList.add("hours");
-        dayViewElement.appendChild(hourElement);
-        hourElement.onclick=addFup();
-    }
+    // for (let i=0; i<3; i++){
+    //     let hourElement=document.createElement("div");
+    //     hourElement.classList.add("hours");
+    //     dayViewElement.appendChild(hourElement);
+    //     // hourElement.onclick=addFup();
+    // }
 }
 
 function weekButtonClicked(firstDay) {
     calendarElement.innerHTML = "";
-    console.log(firstDay);
-// FIRST DAY IS UNDEFINED 
+
     let weekViewElement = document.createElement("div");
     calendarElement.appendChild(weekViewElement);
     weekViewElement.classList.add("calendarView");
 
-    for (let i = 1; i < 6; i++) {
+    for (let i = 0; i < 5; i++) {
         let dayDivElement = document.createElement("div");
 
-        let day = today.clone(); 
+        let day = firstDay.clone(); 
         day.add(i, 'days');
 
         dayString = day.format("D ddd");
@@ -101,10 +103,7 @@ function weekButtonClicked(firstDay) {
             dayDivElement.innerHTML = "<b>" + dayString + "</b>";
         } 
         // else if (){} ADD HOLIDAYS IN BOLD HERE
-        //  else {
-        //     let day = today.clone().add(i - today.day(), "days");
-        //     dayDivElement.textContent = day.format("MMM  D ddd");
-        // }
+   
         dayDivElement.innerHTML=dayString;
 
         dayDivElement.classList.add("day");
@@ -126,12 +125,10 @@ function monthButtonClicked() {
     calendarElement.appendChild(monthViewElement);
     monthViewElement.classList.add("calendarView");
 
-    let firstDayOfMonth = today.clone().subtract(today.date() - 1, "days");
-    console.log("first day of month", firstDayOfMonth);
     for (let i=0; i < today.daysInMonth(); i++) {
         let dayDivElement = document.createElement("div");
 
-        let day = firstDayOfMonth.clone().add(i, "days");
+        let day = currentMonthStart.add(i, "days");
 
         dayString = day.format("D ddd");
 
@@ -143,27 +140,30 @@ function monthButtonClicked() {
         dayDivElement.classList.add("day");
         monthViewElement.appendChild(dayDivElement);
 
-        for (let i=0; i<3; i++){
-            let hourElement=document.createElement("div");
-            hourElement.classList.add("hours");
-            hourElement.onclick=addFup();
-            dayDivElement.appendChild(hourElement);
-        }
+        // for (let i=0; i<3; i++){
+        //     let hourElement=document.createElement("div");
+        //     hourElement.classList.add("hours");
+        //     // hourElement.onclick=addFup();
+        //     dayDivElement.appendChild(hourElement);
+        // }
         //3 because it wil only show 2 power hours and admin task field form settings, considering the max calls set on power hours,
         //showing only how full it is (color change?)
     }
 }
 //how to do this for month/day?
 function previousButtonClicked(){
-    currentWeek.subtract(7, "days");
-    weekButtonClicked(currentWeek);
+    currentWeekStart.subtract(1, "week");
+    currentWeekEnd.subtract(1, "week");
+    weekButtonClicked(currentWeekStart, currentWeekEnd);
 }
 
 function nextButtonClicked(){
-    currentWeek.add(7, "days");
-    weekButtonClicked(currentWeek);
+    currentWeekStart.add(1, "week");
+    currentWeekEnd.add(1, "week");
+    weekButtonClicked(currentWeekStart, currentWeekEnd);
 }
 
+// does not create any new div bc dayDivELement is not defined (globally) + need to add that this is saved to localstorage
 function timeframes(){
     let powerHourAMElement=document.createElement("div");
     powerHourAMElement.classList.add("hours");
@@ -175,6 +175,12 @@ function timeframes(){
     powerHourPMElement.onclick=addFup();
     dayDivElement.appendChild(powerHourPMElement);
 
-    //for admin tasks
-    //if (){} 
+    if (fromAdmin&&toAdmin!==null){
+        let AdminElement=document.createElement("div");
+        AdminElement.classList.add("hours");
+        AdminElement.onclick=addFup();
+        dayDivElement.appendChild(AdminElement);
+    } 
 }
+
+weekButtonClicked(currentWeekStart, currentWeekEnd);
