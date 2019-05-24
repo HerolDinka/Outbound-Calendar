@@ -64,11 +64,10 @@
             background-color: rgba(0, 0, 0, 0.1);
             width: 16%;
         }
-
-        /* .monthShrink {
-        transform: scaleY(.3);
-
-        } */
+/* should change it */
+        .holiday {
+                background-color: #a9f03e50;
+        }
 
         button:hover {
             background-color: #ddd;
@@ -150,8 +149,11 @@
         <div id="monthYear"></div>
 
         <div class="toolBarRight">
-            <button id="berlinTime" onclick="berlinButtonClicked()">Berlin Time</button>
-            <button id="nyTime" onclick="nyButtonClicked()">New York Time</button>
+            <select onchange="changeTimeZoneClicked()" id="tzchanger">
+                    <option value="Europe/Berlin">Berlin</option>
+                    <option value="America/New_York">New York</option>
+            </select>
+            <button id="addTask" onclick="addTaskButtonClicked()">Create task</button>
         </div>
     </div>
     <div id="calendar">
@@ -159,11 +161,12 @@
 </div>
     <div id="addNewClient" class="modal">
         <div class="modalContent">
-            <span class="close" onclick="addFupClosed()">&times;</span>
+            <span class="close" onclick="addTaskClosed()">&times;</span>
             <form method="POST">
                 <p>Add a new client to call in your core calling time</p>
                 <div> Client´s email address: <input type="email" placeholder="mr.director@verybigcompany.com" required>
                 </div>
+                <div>Start date: <input type="date" required></div>
                 <div> Follow-up frequency (day): <input type="number" placeholder="3" min="1" max="5" required></div>
                 <div> Amount of follow-up calls: <input type="number" placeholder="5" min="0" max="100" required></div>
                 <div>Any Administrative task to add: <input type="text" placeholder="create a report to send"> after
@@ -177,21 +180,20 @@
     <div id="settingsModal" class="modal">
         <div class="modalContent">
             <span class="close" onclick="settingClosed()">&times;</span>
-            <form method="POST">
+            <div>
                 <p>Please specify your core calling times</p>
                 <div> Morning Power Hours: from: <input id="fromAM" type="time" required> to: <input id="toAM" type="time" required></div>
                 <div> Afternoon Power Hours: from: <input id="fromPM" type="time" required> to: <input id="toPM" type="time" required></div>
                 <div> Administrative tasks: from: <input id="fromAdmin" type="time"> to: <input id="toAdmin" type="time"></div>
                 <div> How many calls do you want to achieve in one power hour? <input id="maxCalls" type="number" placeholder="30" min="1" max="500" required></div>
-                <div><input type="submit" value="Submit" onclick="timeframes()"></div>
-            </form>
+                <div><button onclick="settingsSubmitClicked()"> Submit </button></div>
+            </div>
         </div>
     </div>
 
     <script src="https://momentjs.com/downloads/moment-with-locales.min.js"></script>
     <script src="https://momentjs.com/downloads/moment-timezone-with-data.js"></script>
-    <script src="https://unpkg.com/moment-holiday/build/moment-holiday-us.min.js"></script>
-    <script src="https://unpkg.com/moment-holiday/locale/germany.js"></script>
+    <script src="https://unpkg.com/moment-holiday/build/moment-holiday-pkg.min.js"></script>
     <script src="main.js"></script>
 </body>
 
