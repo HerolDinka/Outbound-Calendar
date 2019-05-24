@@ -1,6 +1,6 @@
 let calendarElement = document.getElementById("calendar");
 moment.locale("en-gb");
-let today = moment();
+let today = moment().utc();
 
 let currentWeekStart=today.clone().startOf("week");
 let currentWeekEnd=today.clone().endOf("week");
@@ -11,8 +11,7 @@ let timezone=moment.tz.guess(true);
 console.log(timezone);
 let currentTime=today.hour();
 console.log(currentTime);
-let nyHols=moment().holidays();
-let berlinHols=moment.modifyHolidays.set('Germany');
+let timezoneElement = document.getElementById("tzchanger");
 let defaultMonth=moment().format("MMMM");
 let defaultYear=moment().format("YYYY");
 let monthYearElement=document.getElementById("monthYear");
@@ -21,26 +20,47 @@ let modalElement=document.getElementById("addNewClient");
 let settingElement=document.getElementById("settingsModal");
 let modalCloseElement=document.getElementsByClassName("close")[0];
 
-
-// WHAT IS WRONG HERE?
-console.log(berlinHols);
-
-function berlinButtonClicked(){
-    moment.tz.setDefault();
+let holidayRegions = ['Germany', 'United States'];
+for (let region of holidayRegions) {
+    moment.modifyHolidays.add(region)
 }
 
-function nyButtonClicked(){
-    moment.tz.setDefault("America/New_York");
-    // WHY CURRENT TIME DOES NOT CHANGE?
-    console.log(currentTime);
+let settings={
+    callMorningStart:"",
+    callMorningEnd:"",
+    callAfternoonStart:"",
+    callAfternoonEnd:"",
+    AdminStart:"",
+    AdminEnd:"",
+    taskMax:500,
 }
 
-//have to make div clickable for onclick function so that it does not simply popup on its own maybe?
-function addFup () {
+let toDos=[{
+    period:"morning",
+    date:"22/5/2019",
+    task:"Call that dude",
+    email:"eeee@gmail.com",
+    frequency:"2",
+    amountFollowUp:"2",
+    taskTime:"1",
+},
+{
+    period:"afternoon",
+    date:"23/5/2019",
+    task:"Call that guy",
+    email:"aaaa@gmail.com",
+    frequency:"3",
+    amountFollowUp:"2",
+    taskTime:"1",
+}]
+    
+
+
+function addTaskButtonClicked() {
     modalElement.style.display = "block";
 }
 
-function addFupClosed(){
+function addTaskClosed(){
     modalElement.style.display = "none";
 }
 
@@ -54,6 +74,35 @@ function settingsButtonClicked(){
     settingElement.style.display = "block";
 }
 
+function settingsSubmitClicked(){
+    let callMorningStart=document.getElementById("fromAM").value;
+    settings.callMorningStart=callMorningStart;
+    let callMorningEnd=document.getElementById("toAM").value;
+    settings.callMorningEnd=callMorningEnd;
+    let callAfternoonStart=document.getElementById("fromPM").value;
+    settings.callAfternoonStart=callAfternoonStart;
+    let callAfternoonEnd=document.getElementById("toPM").value;
+    settings.callAfternoonEnd=callAfternoonEnd;
+    let AdminStart=document.getElementById("fromAdmin").value;
+    settings.AdminStart=AdminStart;
+    let AdminEnd=document.getElementById("toAdmin").value;
+    settings.AdminEnd=AdminEnd;
+    let taskMax=document.getElementById("maxCalls").value;
+    settings.taskMax=taskMax;
+    settingClosed();
+}
+
+function saveSetting(){
+    localStorage.setItem("SETTINGS", JSON.stringify(settings));
+}
+
+function loadSetting(){
+    const savedSettings = localStorage.getItem("SETTINGS")
+    if (savedSettings){
+        settings=savedSettings;
+    }
+}
+
 function settingClosed(){
     settingElement.style.display = "none";
 }
@@ -63,6 +112,12 @@ window.onclick = function(event) {
       settingElement.style.display = "none";
     }
   }
+
+function isSameDay(day1, day2){
+    let day1UTC=day1.clone().utc();
+    let day2UTC=day2.clone().utc();
+    return day1UTC.year() === day2UTC.year() && day1UTC.dayOfYear() === day2UTC.dayOfYear();
+}
 
 function dayButtonClicked() {
     calendarElement.innerHTML = "";
@@ -74,6 +129,13 @@ function dayButtonClicked() {
     calendarElement.appendChild(dayViewElement);
     dayViewElement.classList.add("day");
 
+    let holiday = day.isHoliday();
+    if (holiday) {
+        let holidayEventElement = document.createElement('div');
+        holidayEventElement.textContent = 'Holiday: ' + holiday;
+        dayDivElement.classList.add("holiday");
+        dayDivElement.appendChild(holidayEventElement);
+    }
 
     // for (let i=0; i<3; i++){
     //     let hourElement=document.createElement("div");
@@ -85,7 +147,6 @@ function dayButtonClicked() {
 
 function weekButtonClicked(firstDay) {
     calendarElement.innerHTML = "";
-
     let weekViewElement = document.createElement("div");
     calendarElement.appendChild(weekViewElement);
     weekViewElement.classList.add("calendarView");
@@ -97,6 +158,7 @@ function weekButtonClicked(firstDay) {
         day.add(i, 'days');
 
         dayString = day.format("D ddd");
+        let dayString2=day.format("l");        
 
         if (i === today.day()) {
             console.log(today);
@@ -109,12 +171,52 @@ function weekButtonClicked(firstDay) {
         dayDivElement.classList.add("day");
         weekViewElement.appendChild(dayDivElement);
 
-        for (let i=0; i<3; i++){
-            let hourElement=document.createElement("div");
-            hourElement.classList.add("hours");
-            hourElement.onclick=addFup();
-            dayDivElement.appendChild(hourElement);
+        // for (let i=0; i<3; i++){
+        //     let hourElement=document.createElement("div");
+        //     hourElement.classList.add("hours");
+        //     hourElement.onclick=addFup();
+        //     dayDivElement.appendChild(hourElement);
+        // }
+        let morningElement=document.createElement("div");
+
+        
+        let afternoonElement=document.createElement("div");
+        let adminElement=document.createElement("div");
+        
+        console.log(dayString2);
+        let daysToDo=toDos[dayString2];
+        morningElement.textContent=settings.callMorningStart + "-" + settings.callMorningEnd;
+        afternoonElement.textContent=settings.callAfternoonStart + "-" + settings.callAfternoonEnd;
+        adminElement.textContent=settings.AdminStart + "-" + settings.AdminEnd;
+        if (daysToDo){
+            morningElement.textContent+=daysToDo;
+            afternoonElement.textContent+=daysToDo;
+            adminElement.textContent+=daysToDo;
         }
+        morningElement.classList.add("hours");
+        afternoonElement.classList.add("hours");
+        adminElement.classList.add("hours");
+        dayDivElement.appendChild(morningElement);
+        dayDivElement.appendChild(afternoonElement);
+        dayDivElement.appendChild(adminElement);
+        
+        let taskBox=document.createElement("div");
+
+        toDos.forEach(function(item, index){
+            console.log(dayString2, item.date)
+            if(dayString2===item.date){
+                taskBox.textContent=`${taskBox.textContent} ${item.date} ${item.task} ${item.email} ${item.frequency}`;
+                if (item.period === 'morning') {
+                    morningElement.appendChild(taskBox); 
+                }
+                else if (item.period === 'afternoon') {
+                    afternoonElement.appendChild(taskBox); 
+                }
+                else{
+                    adminElement.appendChild(taskBox);
+                }
+            }
+        })
     }
 }
 
@@ -139,15 +241,6 @@ function monthButtonClicked() {
     }
         dayDivElement.classList.add("day");
         monthViewElement.appendChild(dayDivElement);
-
-        // for (let i=0; i<3; i++){
-        //     let hourElement=document.createElement("div");
-        //     hourElement.classList.add("hours");
-        //     // hourElement.onclick=addFup();
-        //     dayDivElement.appendChild(hourElement);
-        // }
-        //3 because it wil only show 2 power hours and admin task field form settings, considering the max calls set on power hours,
-        //showing only how full it is (color change?)
     }
 }
 //how to do this for month/day?
@@ -163,24 +256,11 @@ function nextButtonClicked(){
     weekButtonClicked(currentWeekStart, currentWeekEnd);
 }
 
-// does not create any new div bc dayDivELement is not defined (globally) + need to add that this is saved to localstorage
-function timeframes(){
-    let powerHourAMElement=document.createElement("div");
-    powerHourAMElement.classList.add("hours");
-    powerHourAMElement.onclick=addFup();
-    dayDivElement.appendChild(powerHourAMElement);
-
-    let powerHourPMElement=document.createElement("div");
-    powerHourPMElement.classList.add("hours");
-    powerHourPMElement.onclick=addFup();
-    dayDivElement.appendChild(powerHourPMElement);
-
-    if (fromAdmin&&toAdmin!==null){
-        let AdminElement=document.createElement("div");
-        AdminElement.classList.add("hours");
-        AdminElement.onclick=addFup();
-        dayDivElement.appendChild(AdminElement);
-    } 
+function changeTimeZoneClicked() {
+    let tz = timezoneElement.value;
+    timezone = tz;
+    weekButtonClicked(currentWeekStart);
 }
 
+loadSetting();
 weekButtonClicked(currentWeekStart, currentWeekEnd);
