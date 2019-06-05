@@ -164,15 +164,19 @@
             <span class="close" onclick="addTaskClosed()">&times;</span>
             <form method="POST">
                 <p>Add a new client to call in your core calling time</p>
-                <div> Client´s email address: <input type="email" placeholder="mr.director@verybigcompany.com" required>
+                <div> Client´s email address: <input type="email" placeholder="mr.director@verybigcompany.com" id="email" required>
                 </div>
-                <div>Start date: <input type="date" required></div>
-                <div> Follow-up frequency (day): <input type="number" placeholder="3" min="1" max="5" required></div>
-                <div> Amount of follow-up calls: <input type="number" placeholder="5" min="0" max="100" required></div>
+                <div>Start date: <input type="date" required id="taskDate"></div>
+                <div>Start time: <select id="periodDay">
+                    <option value="morning">Morning Power Hours</option>
+                    <option value="afternoon">Afternoon Power Hours</option>
+                </select></div>
+                <div> Follow-up frequency (day): <input type="number" placeholder="3" min="1" max="5" 'required'></div>
+                <div> Amount of follow-up calls: <input type="number" placeholder="5" min="0" max="100" 'required'></div>
                 <div>Any Administrative task to add: <input type="text" placeholder="create a report to send"> after
                     <input type="number" placeholder="0" min="0" max="100"> follow-up calls.
                 </div>
-                <div><input type="submit" value="Submit"></div>
+                <div><button onclick="addNewTaskButtonClicked()">Add New Task</button></div>
             </form>
         </div>
     </div>
